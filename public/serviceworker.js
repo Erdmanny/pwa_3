@@ -1,5 +1,6 @@
 const STATIC_CACHE = "static-v1";
 const DYNAMIC_CACHE = "dynamic-v1";
+const OFFLINE_URL = "/fallback";
 
 const DYNAMIC_ASSETS = [
     "http://localhost/people/getPeople",
@@ -35,6 +36,7 @@ self.addEventListener("install", (event) => {
                 .catch(err => {
                     console.log(err);
                 });
+            cache.add(new Request(OFFLINE_URL, { cache: "reload" }));
         })
     );
     event.waitUntil(
@@ -65,30 +67,53 @@ self.addEventListener("fetch", (event) => {
             caches.open(DYNAMIC_CACHE).then(function (cache) {
                 return fetch(event.request).then(function (response) {
                     cache.put(event.request, response.clone())
-                        .catch(error => {});
+                        .catch(error => {
+                        });
                     return response;
                 })
             })
         )
-    } else if (event.request.url.includes("getSinglePerson?")){
+    } else if (event.request.url.includes("getSinglePerson?")) {
         event.respondWith(
             caches.match("/people/getSinglePerson").then(cacheRes => {
                 return cacheRes || fetch(event.request)
             })
         )
     } else {
-        event.respondWith(
-            caches.match(event.request).then(cacheRes => {
-                return cacheRes || fetch(event.request)
-            })
-        )
+        if (event.request.mode === "navigate") {
+            console.log("navigate");
+            event.respondWith(
+                (async () => {
+                    try {
+                        const cache = await caches.open(STATIC_CACHE);
+                        if (await cache.match(event.request)){
+                            console.log("1");
+                            return await cache.match(event.request)
+                        } else {
+                            console.log("2");
+                            return await fetch(event.request);
+                        }
+                    } catch (error) {
+                        console.log("Fetch failed; returning offline page instead.", error);
+
+                        const cache = await caches.open(STATIC_CACHE);
+                        return await cache.match(OFFLINE_URL);
+                    }
+                })()
+            );
+        } else {
+            event.respondWith(
+                caches.match(event.request).then(cacheRes => {
+                    return cacheRes || fetch(event.request);
+                })
+            )
+        }
     }
 });
 
 
-
 self.addEventListener('push', event => {
-    if (!(self.Notification && self.Notification.permission === 'granted')){
+    if (!(self.Notification && self.Notification.permission === 'granted')) {
         return;
     }
 
@@ -131,7 +156,7 @@ self.addEventListener('notificationclick', event => {
                 return client.focus();
             }
         }
-        if (clients.openWindow){
+        if (clients.openWindow) {
             return clients.openWindow(url);
         }
     }));

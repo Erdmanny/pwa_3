@@ -40,7 +40,7 @@ $validation = \Config\Services::validation();
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <form action="/login" method="post">
+                    <form action="http://localhost/login" method="post">
                         <div class="row m-3">
                             <div class="col-12">
                                 <div class="form-group">
