@@ -24,7 +24,7 @@ class Validation
 		Rules::class,
 		FormatRules::class,
 		FileRules::class,
-		UserRules::class,
+//		UserRules::class,
 	];
 
 	/**

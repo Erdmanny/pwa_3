@@ -28,7 +28,8 @@ class UserModel extends Model{
         $data = [
             'email' => $email,
             'password' => password_hash($password, PASSWORD_DEFAULT),
-            'token' => $token
+            'token' => $token,
+            'secret' => uniqid("secret", TRUE)
         ];
         $this->_user->insert($data);
     }

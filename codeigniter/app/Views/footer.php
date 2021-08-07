@@ -14,7 +14,7 @@
 <!--Bootstrap-Table-Mobile JS-->
 <script src="https://unpkg.com/bootstrap-table@1.18.1/dist/extensions/mobile/bootstrap-table-mobile.min.js"></script>
 
-<script src="app.js"></script>
+<script src="/app.js"></script>
 
 </body>
 </html>

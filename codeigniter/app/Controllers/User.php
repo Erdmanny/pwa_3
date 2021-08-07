@@ -18,7 +18,59 @@ class User extends BaseController
 
     public function index()
     {
-        echo view('header');
+        $this->_session->destroy();
+        if (isset($_COOKIE["error-edit-prename"])){
+            unset($_COOKIE["error-edit-prename"]);
+            setcookie("error-edit-prename", "", -1, "/");
+        }
+        if (isset($_COOKIE["error-edit-surname"])){
+            unset($_COOKIE["error-edit-surname"]);
+            setcookie("error-edit-surname", "", -1, "/");
+        }
+        if (isset($_COOKIE["error-edit-street"])){
+            unset($_COOKIE["error-edit-street"]);
+            setcookie("error-edit-street", "", -1, "/");
+        }
+        if (isset($_COOKIE["error-edit-postcode"])){
+            unset($_COOKIE["error-edit-postcode"]);
+            setcookie("error-edit-postcode", "", -1, "/");
+        }
+        if (isset($_COOKIE["error-edit-city"])){
+            unset($_COOKIE["error-edit-city"]);
+            setcookie("error-edit-city", "", -1, "/");
+        }
+        if (isset($_COOKIE["error-new-prename"])){
+            unset($_COOKIE["error-new-prename"]);
+            setcookie("error-new-prename", "", -1, "/");
+        }
+        if (isset($_COOKIE["error-new-surname"])){
+            unset($_COOKIE["error-new-surname"]);
+            setcookie("error-new-surname", "", -1, "/");
+        }
+        if (isset($_COOKIE["error-new-street"])){
+            unset($_COOKIE["error-new-street"]);
+            setcookie("error-new-street", "", -1, "/");
+        }
+        if (isset($_COOKIE["error-new-postcode"])){
+            unset($_COOKIE["error-new-postcode"]);
+            setcookie("error-new-postcode", "", -1, "/");
+        }
+        if (isset($_COOKIE["error-new-city"])){
+            unset($_COOKIE["error-new-city"]);
+            setcookie("error-new-city", "", -1, "/");
+        }
+        if (isset($_COOKIE["userSecret"])) {
+            unset($_COOKIE["userSecret"]);
+            setcookie("userSecret", "", -1, "/");
+        }
+        if (isset($_COOKIE["userID"])) {
+            unset($_COOKIE["userID"]);
+            setcookie("userID", "", -1, "/");
+        }
+        if (isset($_COOKIE["token"])) {
+            unset($_COOKIE["token"]);
+            setcookie("token", "", -1, "/");
+        }
         echo view('login');
     }
 
@@ -49,12 +101,13 @@ class User extends BaseController
 
 
             return redirect()->to('people');
+        } else {
+            return redirect()->to('/');
         }
     }
 
     public function showRegistration()
     {
-        echo view('header');
         echo view('register');
     }
 
@@ -84,59 +137,6 @@ class User extends BaseController
 
     public function logout()
     {
-        $this->_session->destroy();
-        if (isset($_COOKIE["error-edit-prename"])){
-            unset($_COOKIE["error-edit-prename"]);
-            setcookie("error-edit-prename", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-surname"])){
-            unset($_COOKIE["error-edit-surname"]);
-            setcookie("error-edit-surname", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-street"])){
-            unset($_COOKIE["error-edit-street"]);
-            setcookie("error-edit-street", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-postcode"])){
-            unset($_COOKIE["error-edit-postcode"]);
-            setcookie("error-edit-postcode", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-city"])){
-            unset($_COOKIE["error-edit-city"]);
-            setcookie("error-edit-city", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-prename"])){
-            unset($_COOKIE["error-edit-prename"]);
-            setcookie("error-edit-prename", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-surname"])){
-            unset($_COOKIE["error-edit-surname"]);
-            setcookie("error-edit-surname", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-street"])){
-            unset($_COOKIE["error-edit-street"]);
-            setcookie("error-edit-street", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-postcode"])){
-            unset($_COOKIE["error-edit-postcode"]);
-            setcookie("error-edit-postcode", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-city"])){
-            unset($_COOKIE["error-edit-city"]);
-            setcookie("error-edit-city", "", -1, "/");
-        }
-        if (isset($_COOKIE["userSecret"])) {
-            unset($_COOKIE["userSecret"]);
-            setcookie("userSecret", "", -1, "/");
-        }
-        if (isset($_COOKIE["userID"])) {
-            unset($_COOKIE["userID"]);
-            setcookie("userID", "", -1, "/");
-        }
-        if (isset($_COOKIE["token"])) {
-            unset($_COOKIE["token"]);
-            setcookie("token", "", -1, "/");
-        }
         return redirect()->to('/');
     }
 

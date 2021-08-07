@@ -21,10 +21,12 @@ if (Notification.permission === 'denied') {
     console.warn('Notifications are denied by the user');
 }
 
+
+
 function initServiceWorker() {
-    navigator.serviceWorker.register('serviceworker.js')
+    navigator.serviceWorker.register('/serviceworker.js')
         .then(() => {
-                // console.log('[SW] Service worker has been registered');
+                console.log('[SW] Service worker has been registered');
                 return navigator.serviceWorker.ready;
             },
             e => {
@@ -61,19 +63,36 @@ function initTable() {
     })
 }
 
+initTable();
 let people = null;
 
 if (navigator.onLine) {
-    people = fetch("http://localhost/getPeople")
+    fetch("http://localhost/people/checkCookie")
+        .then((resp) => resp.json())
+        .then(data => {
+            if (data) {
+                window.location.href = "http://localhost/";
+            } else {
+                initServiceWorker();
+            }
+        })
+        .catch(err => console.log(err));
+}
+
+if (navigator.onLine) {
+    people = fetch("http://localhost/people/getPeople")
         .then(response => response.json())
         .then(data => {
             writeToView(data);
+        })
+        .catch(err => {
+            console.log("Security cookies not found");
         })
 }
 
 // fetch cached data
 caches.open("dynamic-v1").then(function (cache) {
-    cache.match("http://localhost/getPeople")
+    cache.match("http://localhost/people/getPeople")
         .then(response => {
             if (!response) throw Error("No Data");
             return response.json();
@@ -89,17 +108,6 @@ function writeToView(people) {
     peopleTable.bootstrapTable('load', people);
 }
 
-
-// div to show if internet connection exists
-if (navigator.onLine) {
-    document.getElementById("show-online").classList.remove("bg-danger");
-    document.getElementById("show-online").classList.add("bg-success");
-    document.getElementById("show-online").innerText = "Online";
-} else {
-    document.getElementById("show-online").classList.remove("bg-success");
-    document.getElementById("show-online").classList.add("bg-danger");
-    document.getElementById("show-online").innerText = "Offline";
-}
 
 // reloads page when back online
 window.addEventListener('online', () => {
@@ -196,9 +204,6 @@ function push_subscribe() {
         .then(subscription => {
             return push_sendSubscriptionToServer(subscription, 'POST');
         })
-        .then(subscription => {
-            isPushEnabled = true;
-        })
         .catch(e => {
             if (Notification.permission === 'denied') {
                 console.warn('Notifications are denied by the user.');
@@ -217,10 +222,6 @@ function push_unsubscribe() {
                 return;
             }
             return push_sendSubscriptionToServer(subscription, 'DELETE');
-        })
-        .then(subscription => {
-            subscription.unsubscribe();
-            isPushEnabled = false;
         })
         .catch(e => {
             console.error('Error when unsubscribing the user', e);
@@ -248,6 +249,6 @@ function push_sendSubscriptionToServer(subscription, method) {
     }).then(() => subscription);
 }
 
-initTable();
-initServiceWorker();
+
+
 // https://developer.mozilla.org/en-US/docs/Web/API/PushManager/getSubscription

@@ -2,15 +2,16 @@ const STATIC_CACHE = "static-v1";
 const DYNAMIC_CACHE = "dynamic-v1";
 
 const DYNAMIC_ASSETS = [
-    "getPeople"
+    "http://localhost/people/getPeople",
+    "http://localhost/people/checkCookie"
 ];
 
 
 const STATIC_ASSETS = [
-    "logo.ico",
-    "manifest.webmanifest",
-    "icon/icon96.png",
-    "icon/icon144.png",
+    "/logo.ico",
+    "/manifest.webmanifest",
+    "/icon/icon96.png",
+    "/icon/icon144.png",
     "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css",
     "https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css",
     "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css",
@@ -21,11 +22,10 @@ const STATIC_ASSETS = [
     "https://unpkg.com/bootstrap-table@1.18.1/dist/extensions/mobile/bootstrap-table-mobile.min.js",
     "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/fonts/bootstrap-icons.woff?856008caa5eb66df68595e734e59580d",
     "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/fonts/bootstrap-icons.woff2?856008caa5eb66df68595e734e59580d",
-    "/",
-    "people",
-    "addPerson",
-    "editPerson",
-    "app.js"
+    "/people",
+    "/people/addPerson",
+    "/people/getSinglePerson",
+    "/app.js"
 ];
 
 self.addEventListener("install", (event) => {
@@ -42,6 +42,7 @@ self.addEventListener("install", (event) => {
             cache.addAll(DYNAMIC_ASSETS);
         })
     );
+    self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
@@ -56,9 +57,10 @@ self.addEventListener("activate", (event) => {
 });
 
 
-
 self.addEventListener("fetch", (event) => {
-    if (event.request.url.endsWith("getPeople")) {
+    // console.log(event.request.url);
+    if (DYNAMIC_ASSETS.indexOf(event.request.url) !== -1) {
+        // console.log("URL: " + event.request.url);
         event.respondWith(
             caches.open(DYNAMIC_CACHE).then(function (cache) {
                 return fetch(event.request).then(function (response) {
@@ -68,9 +70,9 @@ self.addEventListener("fetch", (event) => {
                 })
             })
         )
-    } else if (event.request.url.includes("editPerson?")){
+    } else if (event.request.url.includes("getSinglePerson?")){
         event.respondWith(
-            caches.match("editPerson").then(cacheRes => {
+            caches.match("/people/getSinglePerson").then(cacheRes => {
                 return cacheRes || fetch(event.request)
             })
         )

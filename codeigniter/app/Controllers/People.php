@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\PeopleModel;
 use App\Models\PushNotificationsModel;
 use App\Models\UserModel;
+use CodeIgniter\HTTP\Response;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 use CodeIgniter\API\ResponseTrait;
@@ -46,11 +47,24 @@ class People extends BaseController
     }
 
 
+    /**
+     * @return Response
+     */
+    public function checkCookie(): Response
+    {
+        if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"])) {
+            return $this->respond(true)->setContentType("application/json");
+        } else {
+            return $this->respond(false)->setContentType("application/json");
+        }
+    }
+
+
     public function index()
     {
-        if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
-            return $this->response->redirect(site_url("/"));
-        }
+//        if (!isset($_COOKIE["userID"])) {
+//            return $this->response->redirect(site_url("/"));
+//        }
         echo view('header');
         echo view('people');
         echo view('footer');
@@ -81,27 +95,30 @@ class People extends BaseController
             unset($_COOKIE["error-edit-city"]);
             setcookie("error-edit-city", "", -1, "/");
         }
-        if (isset($_COOKIE["error-edit-prename"])){
-            unset($_COOKIE["error-edit-prename"]);
-            setcookie("error-edit-prename", "", -1, "/");
+        if (isset($_COOKIE["error-new-prename"])){
+            unset($_COOKIE["error-new-prename"]);
+            setcookie("error-new-prename", "", -1, "/");
         }
-        if (isset($_COOKIE["error-edit-surname"])){
-            unset($_COOKIE["error-edit-surname"]);
-            setcookie("error-edit-surname", "", -1, "/");
+        if (isset($_COOKIE["error-new-surname"])){
+            unset($_COOKIE["error-new-surname"]);
+            setcookie("error-new-surname", "", -1, "/");
         }
-        if (isset($_COOKIE["error-edit-street"])){
-            unset($_COOKIE["error-edit-street"]);
-            setcookie("error-edit-street", "", -1, "/");
+        if (isset($_COOKIE["error-new-street"])){
+            unset($_COOKIE["error-new-street"]);
+            setcookie("error-new-street", "", -1, "/");
         }
-        if (isset($_COOKIE["error-edit-postcode"])){
-            unset($_COOKIE["error-edit-postcode"]);
-            setcookie("error-edit-postcode", "", -1, "/");
+        if (isset($_COOKIE["error-new-postcode"])){
+            unset($_COOKIE["error-new-postcode"]);
+            setcookie("error-new-postcode", "", -1, "/");
         }
-        if (isset($_COOKIE["error-edit-city"])){
-            unset($_COOKIE["error-edit-city"]);
-            setcookie("error-edit-city", "", -1, "/");
+        if (isset($_COOKIE["error-new-city"])){
+            unset($_COOKIE["error-new-city"]);
+            setcookie("error-new-city", "", -1, "/");
         }
-
+        if (isset($_COOKIE["success"])){
+            unset($_COOKIE["success"]);
+            setcookie("success", "", -1, "/");
+        }
 
 
 
@@ -112,17 +129,16 @@ class People extends BaseController
 
         for ($i = 0; $i < sizeof($people); $i++) {
             $id = $people[$i]["id"];
-            $deleteURL = "'deletePerson($id)'";
 
             $people[$i]["address"] = $people[$i]["zip"] . " " . $people[$i]["city"];
             $people[$i]["fullname"] = $people[$i]["prename"] . " " . $people[$i]["name"];
 
 
             $people[$i]["buttons"] =
-                "<a type='button' href='/editPerson?id={$id}' class='btn btn-warning btn-sm mr-2'>
+                "<a type='button' href='http://localhost/people/getSinglePerson?id={$id}' class='btn btn-warning btn-sm mr-2'>
                     <i class='bi bi-pencil-fill'></i>
                 </a>
-                <button type='button' onclick=$deleteURL id='delete-button' class='btn btn-danger btn-sm'>
+                <button type='button' onclick='deletePerson($id)' id='delete-button' class='btn btn-danger btn-sm'>
                     <i class='bi bi-trash-fill'></i>
                 </button>";
         }
@@ -135,9 +151,9 @@ class People extends BaseController
 
     public function addPerson()
     {
-        if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
-            return $this->response->redirect(site_url("/"));
-        }
+//        if (!isset($_COOKIE["userID"])) {
+//            return $this->response->redirect(site_url("/"));
+//        }
         echo view('header');
         echo view("addPerson");
         echo view('footer');
@@ -235,7 +251,8 @@ class People extends BaseController
 
 
             if (!empty($id)) {
-                $this->_session->setFlashdata('success', 'Person added');
+                setcookie("success", "Person added.", time() + (86400 * 30), "/");
+
 
                 $subscribers = $this->_pushNotificationsModel->getAllSubscribers();
                 foreach ($subscribers as $row) {
@@ -256,7 +273,7 @@ class People extends BaseController
 
 
             } else {
-                $this->_session->setFlashdata('error', 'There was a mistake adding a person.');
+                setcookie("error", "Person not added.", time() + (86400 * 30), "/");
             }
 
 
@@ -266,9 +283,9 @@ class People extends BaseController
 
     function getSinglePerson()
     {
-        if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
-            return $this->response->redirect(site_url("/"));
-        }
+//        if (!isset($_COOKIE["userID"])) {
+//            return $this->response->redirect(site_url("/"));
+//        }
         echo view('header');
         echo view("editPerson");
         echo view('footer');
@@ -371,7 +388,7 @@ class People extends BaseController
 
 
             if (!empty($this->request->getVar('id'))) {
-                $this->_session->setFlashdata('success', 'Person updated');
+                setcookie("success", "Person updated.", time() + (86400 * 30), "/");
 
                 $subscribers = $this->_pushNotificationsModel->getAllSubscribers();
                 foreach ($subscribers as $row) {
@@ -392,7 +409,7 @@ class People extends BaseController
 
 
             } else {
-                $this->_session->setFlashdata('error', 'There was a mistake adding a person.');
+                setcookie("error", "Person not updated.", time() + (86400 * 30), "/");
             }
 
 
@@ -410,7 +427,7 @@ class People extends BaseController
 
 
         if (!empty($id)) {
-            $this->_session->setFlashdata('success', 'Person deleted');
+            setcookie("success", "Person deleted.", time() + (86400 * 30), "/");
 
             $subscribers = $this->_pushNotificationsModel->getAllSubscribers();
             foreach ($subscribers as $row) {
@@ -431,7 +448,7 @@ class People extends BaseController
 
 
         } else {
-            $this->_session->setFlashdata('error', 'There was a mistake deleting a person.');
+            setcookie("success", "Person not deleted.", time() + (86400 * 30), "/");
         }
         $this->_peopleModel->deletePerson($id);
         return $this->response->redirect(site_url("people"));

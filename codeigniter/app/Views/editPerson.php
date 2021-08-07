@@ -4,7 +4,7 @@
     <div class="row mt-3">
 
         <div class="col-lg-12">
-            <form action="<?php echo base_url("people/editPerson_Validation")?>" method="post" id="edit-person-form">
+            <form action="http://localhost/people/editPerson_Validation" method="post" id="edit-person-form">
                 <div class="card">
                     <div class="card-body">
                         <div class="row m-3">
@@ -74,11 +74,10 @@
 <script type="application/javascript">
     let id = window.location.search.substr(1).split("=")[1];
     if (navigator.onLine) {
-        people = fetch("http://localhost/getPeople")
+        people = fetch("http://localhost/people/getPeople")
             .then(response => response.json())
             .then(data => {
                 let person = data.find(element => element["id"] === id);
-                console.log(person);
                 document.getElementById("edit-id").value = person["id"];
                 document.getElementById("edit-prename").value = person["prename"];
                 document.getElementById("edit-surname").value = person["name"];
@@ -90,7 +89,7 @@
 
     // fetch cached data
     caches.open("dynamic-v1").then(function (cache) {
-        cache.match("http://localhost/getPeople")
+        cache.match("http://localhost/people/getPeople")
             .then(response => {
                 if (!response) throw Error("No Data");
                 return response.json();
@@ -110,8 +109,6 @@
         document.getElementById("edit-button").disabled = true;
     }
 
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
     for(let i = 0; i <ca.length; i++) {
         let c = ca[i];
         while (c.charAt(0) === ' ') {

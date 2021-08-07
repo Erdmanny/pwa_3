@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="shortcut icon" type="image/x-icon" href="logo.ico">
-    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="/logo.ico">
+    <link rel="manifest" href="/manifest.webmanifest">
     <title>PWA 2</title>
     <meta name="theme-color" content="#FFE1C4">
 
-    <link rel="apple-touch-icon" href="icon/icon96.png">
+    <link rel="apple-touch-icon" href="/icon/icon96.png">
     <meta name="apple-mobile-web-app-status-bar" content="#aa7700">
 
 
@@ -22,23 +22,33 @@
 
 <body class="bg-dark">
 
-<?php
-$session = \Config\Services::session();
-?>
+
 
 <nav class="navbar navbar-light bg-light sticky-top">
-    <a class="navbar-brand" href="/people">PWA 1</a>
-    <div class="ml-auto d-flex">
-        <button id="pushButton" class="btn btn-primary mr-2 d-flex justify-content-center align-items-center">Allow Push</button>
-        <a href="/logout" class="btn btn-warning mr-2">Logout</a>
-        <div id="show-online" class="bg-success d-flex justify-content-center align-items-center p-2">
-            Online
-        </div>
-    </div>
+    <a class="navbar-brand" href="/people">PWA 2</a>
+    <div class="ml-auto d-flex" id="nav-buttons"></div>
 </nav>
 
 <script type="application/javascript">
-    if (!navigator.onLine){
-        document.getElementById("pushButton").disabled = true;
+
+
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+        }
+        // if (c.indexOf("userID") === 0) {
+            if (navigator.onLine) {
+                document.getElementById("nav-buttons").innerHTML = "<button id='pushButton' class='btn btn-primary mr-2 d-flex justify-content-center align-items-center'>Allow Push</button>" +
+                    "<a href='/logout'><button class='btn btn-warning mr-2'> Logout</button></a>" +
+                    "<div id='show-online' class='bg-success d-flex justify-content-center align-items-center p-2'>Online </div>"
+            } else {
+                document.getElementById("nav-buttons").innerHTML = "<button id='pushButton' class='btn btn-primary mr-2 d-flex justify-content-center align-items-center' disabled>Allow Push</button>" +
+                    "<a href='/logout'><button class='btn btn-warning mr-2' disabled> Logout</button></a>" +
+                    "<div id='show-online' class='bg-danger d-flex justify-content-center align-items-center p-2'>Offline </div>"
+            }
+        // }
     }
 </script>

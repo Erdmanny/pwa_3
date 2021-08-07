@@ -3,7 +3,7 @@
     <div class="row mt-3">
 
         <div class="col-lg-12">
-            <form action="<?php echo base_url("people/addPerson_Validation")?>" method="post" id="new-person-form">
+            <form action="http://localhost/people/addPerson_Validation" method="post" id="new-person-form">
                 <div class="card">
                     <div class="card-body">
                         <div class="row m-3">
@@ -71,8 +71,6 @@
     }
 
 
-    let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
     for(let i = 0; i <ca.length; i++) {
         let c = ca[i];
         while (c.charAt(0) === ' ') {

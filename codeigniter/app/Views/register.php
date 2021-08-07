@@ -1,3 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" type="image/x-icon" href="logo.ico">
+    <link rel="manifest" href="manifest.webmanifest">
+    <title>PWA 2</title>
+    <meta name="theme-color" content="#FFE1C4">
+
+    <link rel="apple-touch-icon" href="icon/icon96.png">
+    <meta name="apple-mobile-web-app-status-bar" content="#aa7700">
+
+
+    <!--Bootstrap CSS-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <!--Bootstrap-Table CSS-->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.0/dist/bootstrap-table.min.css">
+    <!--    Bootstrap Icons-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+</head>
+
+<body class="bg-dark">
+
+
+
+<nav class="navbar navbar-light bg-light sticky-top">
+    <a class="navbar-brand" href="/people">PWA 2</a>
+</nav>
+
 <?php
 $validation = \Config\Services::validation();
 ?>
