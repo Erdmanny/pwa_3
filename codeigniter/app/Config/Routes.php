@@ -38,7 +38,7 @@ $routes->get('fallback', 'Fallback::index');
 $routes->get('people', 'People::index');
 $routes->get('getPeople', 'People::getPeople');
 $routes->get('addPerson', 'People::addPerson');
-$routes->get('editPerson', 'People::getSinglePerson');
+$routes->get('editPerson', 'People::editPerson');
 $routes->get('logout', 'User::logout');
 $routes->match(['post'], 'register', 'User::register');
 $routes->match(['post'], 'login', 'User::login');

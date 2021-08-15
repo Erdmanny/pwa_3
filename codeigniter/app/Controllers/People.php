@@ -62,9 +62,6 @@ class People extends BaseController
 
     public function index()
     {
-//        if (!isset($_COOKIE["userID"])) {
-//            return $this->response->redirect(site_url("/"));
-//        }
         echo view('header');
         echo view('people');
         echo view('footer');
@@ -75,54 +72,10 @@ class People extends BaseController
         if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
             return $this->failUnauthorized();
         }
-        if (isset($_COOKIE["error-edit-prename"])){
-            unset($_COOKIE["error-edit-prename"]);
-            setcookie("error-edit-prename", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-surname"])){
-            unset($_COOKIE["error-edit-surname"]);
-            setcookie("error-edit-surname", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-street"])){
-            unset($_COOKIE["error-edit-street"]);
-            setcookie("error-edit-street", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-postcode"])){
-            unset($_COOKIE["error-edit-postcode"]);
-            setcookie("error-edit-postcode", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-city"])){
-            unset($_COOKIE["error-edit-city"]);
-            setcookie("error-edit-city", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-new-prename"])){
-            unset($_COOKIE["error-new-prename"]);
-            setcookie("error-new-prename", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-new-surname"])){
-            unset($_COOKIE["error-new-surname"]);
-            setcookie("error-new-surname", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-new-street"])){
-            unset($_COOKIE["error-new-street"]);
-            setcookie("error-new-street", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-new-postcode"])){
-            unset($_COOKIE["error-new-postcode"]);
-            setcookie("error-new-postcode", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-new-city"])){
-            unset($_COOKIE["error-new-city"]);
-            setcookie("error-new-city", "", -1, "/");
-        }
-        if (isset($_COOKIE["success"])){
+        if (isset($_COOKIE["success"])) {
             unset($_COOKIE["success"]);
             setcookie("success", "", -1, "/");
         }
-
-
-
-
 
 
         $people = $this->_peopleModel->getPeople();
@@ -134,8 +87,10 @@ class People extends BaseController
             $people[$i]["fullname"] = $people[$i]["prename"] . " " . $people[$i]["name"];
 
 
+            $people[$i]["offline"] =
+                "<div id='tableOffline' class='text-center'></div>";
             $people[$i]["buttons"] =
-                "<a type='button' href='http://localhost/people/getSinglePerson?id={$id}' class='btn btn-warning btn-sm mr-2'>
+                "<a type='button' href='http://localhost/people/editPerson?id={$id}' class='btn btn-warning btn-sm mr-2'>
                     <i class='bi bi-pencil-fill'></i>
                 </a>
                 <button type='button' onclick='deletePerson($id)' id='delete-button' class='btn btn-danger btn-sm'>
@@ -151,9 +106,6 @@ class People extends BaseController
 
     public function addPerson()
     {
-//        if (!isset($_COOKIE["userID"])) {
-//            return $this->response->redirect(site_url("/"));
-//        }
         echo view('header');
         echo view("addPerson");
         echo view('footer');
@@ -164,96 +116,21 @@ class People extends BaseController
         if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
             return $this->failUnauthorized();
         }
-        helper(['form', 'url']);
-
-        if (isset($_COOKIE["error-new-prename"])){
-            unset($_COOKIE["error-new-prename"]);
-            setcookie("error-new-prename", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-new-surname"])){
-            unset($_COOKIE["error-new-surname"]);
-            setcookie("error-new-surname", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-new-street"])){
-            unset($_COOKIE["error-new-street"]);
-            setcookie("error-new-street", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-new-postcode"])){
-            unset($_COOKIE["error-new-postcode"]);
-            setcookie("error-new-postcode", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-new-city"])){
-            unset($_COOKIE["error-new-city"]);
-            setcookie("error-new-city", "", -1, "/");
-        }
-
-        $rules = [
-            'new-prename' => 'required',
-            'new-surname' => 'required',
-            'new-street' => 'required',
-            'new-postcode' => 'required|min_length[5]|max_length[5]|numeric',
-            'new-city' => 'required'
-        ];
-        $error_message = [
-            'new-prename' => [
-                'required' => 'A prename is required'
-            ],
-            'new-surname' => [
-                'required' => 'A surname is required'
-            ],
-            'new-street' => [
-                'required' => 'A street is required'
-            ],
-            'new-postcode' => [
-                'required' => 'A postcode is required',
-                'min_length' => 'Postcode must be of length 5',
-                'max_length' => 'Postcode must be of length 5',
-                'numeric' => 'Postcode can only consist of numbers'
-            ],
-            'new-city' => [
-                'required' => 'A city is required'
-            ],
-        ];
+        $people = $this->request->getPost("people");
 
 
-        $this->_validation->setRules($rules, $error_message);
-
-        $error = $this->validate($rules, $error_message);
-
-        $errors = $this->_validation->getErrors();
-
-        if (!$error) {
-            if (isset($errors["new-prename"])) {
-                setcookie("error-new-prename", $errors["new-prename"], time() + (86400 * 30), "/");
-            }
-            if (isset($errors["new-surname"])) {
-                setcookie("error-new-surname", $errors["new-surname"], time() + (86400 * 30), "/");
-            }
-            if (isset($errors["new-street"])) {
-                setcookie("error-new-street", $errors["new-street"], time() + (86400 * 30), "/");
-            }
-            if (isset($errors["new-postcode"])) {
-                setcookie("error-new-postcode", $errors["new-postcode"], time() + (86400 * 30), "/");
-            }
-            if (isset($errors["new-city"])) {
-                setcookie("error-new-city", $errors["new-city"], time() + (86400 * 30), "/");
-            }
-            return $this->response->redirect(site_url("addPerson"));
-        } else {
+        for ($i = 0; $i < sizeof($people); $i++) {
             $id = $this->_peopleModel->addPerson(
-                $this->request->getVar('new-prename'),
-                $this->request->getVar('new-surname'),
-                $this->request->getVar('new-street'),
-                $this->request->getVar('new-postcode'),
-                $this->request->getVar('new-city'),
+                $people[$i]["new-prename"],
+                $people[$i]["new-surname"],
+                $people[$i]["new-street"],
+                $people[$i]["new-postcode"],
+                $people[$i]["new-city"],
                 $_COOKIE["token"]
             );
 
 
             if (!empty($id)) {
-                setcookie("success", "Person added.", time() + (86400 * 30), "/");
-
-
                 $subscribers = $this->_pushNotificationsModel->getAllSubscribers();
                 foreach ($subscribers as $row) {
 
@@ -268,24 +145,17 @@ class People extends BaseController
 
                     $message = "added";
 
-                    $this->sendMessage($keys_auth, $row->endpoint, $message, $this->request->getVar('new-prename'), $this->request->getVar('new-surname'));
+                    $this->sendMessage($keys_auth, $row->endpoint, $message, $people[$i]["new-prename"], $people[$i]["new-surname"]);
                 }
 
-
-            } else {
-                setcookie("error", "Person not added.", time() + (86400 * 30), "/");
             }
 
-
-            return $this->response->redirect(site_url("people"));
         }
+        return $this->respondCreated();
     }
 
-    function getSinglePerson()
+    function editPerson()
     {
-//        if (!isset($_COOKIE["userID"])) {
-//            return $this->response->redirect(site_url("/"));
-//        }
         echo view('header');
         echo view("editPerson");
         echo view('footer');
@@ -296,99 +166,24 @@ class People extends BaseController
         if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
             return $this->failUnauthorized();
         }
-        helper(['form', 'url']);
 
+        $people = $this->request->getPost("people");
 
-        if (isset($_COOKIE["error-edit-prename"])){
-            unset($_COOKIE["error-edit-prename"]);
-            setcookie("error-edit-prename", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-surname"])){
-            unset($_COOKIE["error-edit-surname"]);
-            setcookie("error-edit-surname", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-street"])){
-            unset($_COOKIE["error-edit-street"]);
-            setcookie("error-edit-street", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-postcode"])){
-            unset($_COOKIE["error-edit-postcode"]);
-            setcookie("error-edit-postcode", "", -1, "/");
-        }
-        if (isset($_COOKIE["error-edit-city"])){
-            unset($_COOKIE["error-edit-city"]);
-            setcookie("error-edit-city", "", -1, "/");
-        }
-
-
-        $rules = [
-            'edit-prename' => 'required',
-            'edit-surname' => 'required',
-            'edit-street' => 'required',
-            'edit-postcode' => 'required|min_length[5]|max_length[5]|numeric',
-            'edit-city' => 'required'
-        ];
-        $error_message = [
-            'edit-prename' => [
-                'required' => 'A prename is required'
-            ],
-            'edit-surname' => [
-                'required' => 'A surname is required'
-            ],
-            'edit-street' => [
-                'required' => 'A street is required'
-            ],
-            'edit-postcode' => [
-                'required' => 'A postcode is required',
-                'min_length' => 'Postcode must be of length 5',
-                'max_length' => 'Postcode must be of length 5',
-                'numeric' => 'Postcode can only consist of numbers'
-            ],
-            'edit-city' => [
-                'required' => 'A city is required'
-            ],
-        ];
-
-        $this->_validation->setRules($rules, $error_message);
-
-        $error = $this->validate($rules, $error_message);
-
-        $errors = $this->_validation->getErrors();
-
-
-        if (!$error) {
-            $id = $this->request->getVar('id');
-
-            if (isset($errors["edit-prename"])) {
-                setcookie("error-edit-prename", $errors["edit-prename"], time() + (86400 * 30), "/");
-            }
-            if (isset($errors["edit-surname"])) {
-                setcookie("error-edit-surname", $errors["edit-surname"], time() + (86400 * 30), "/");
-            }
-            if (isset($errors["edit-street"])) {
-                setcookie("error-edit-street", $errors["edit-street"], time() + (86400 * 30), "/");
-            }
-            if (isset($errors["edit-postcode"])) {
-                setcookie("error-edit-postcode", $errors["edit-postcode"], time() + (86400 * 30), "/");
-            }
-            if (isset($errors["edit-city"])) {
-                setcookie("error-edit-city", $errors["edit-city"], time() + (86400 * 30), "/");
-            }
-            return $this->response->redirect(site_url("editPerson?id={$id}"));
-        } else {
+        for ($i = 0; $i < sizeof($people); $i++) {
             $this->_peopleModel->updatePerson(
-                $this->request->getVar('id'),
-                $this->request->getVar('edit-prename'),
-                $this->request->getVar('edit-surname'),
-                $this->request->getVar('edit-street'),
-                $this->request->getVar('edit-postcode'),
-                $this->request->getVar('edit-city'),
+                $people[$i]["edit-id"],
+                $people[$i]["edit-prename"],
+                $people[$i]["edit-surname"],
+                $people[$i]["edit-street"],
+                $people[$i]["edit-postcode"],
+                $people[$i]["edit-city"],
                 $_COOKIE["token"]
             );
 
+            $id = $people[$i]["edit-id"];
 
-            if (!empty($this->request->getVar('id'))) {
-                setcookie("success", "Person updated.", time() + (86400 * 30), "/");
+
+            if (!empty($id)) {
 
                 $subscribers = $this->_pushNotificationsModel->getAllSubscribers();
                 foreach ($subscribers as $row) {
@@ -404,54 +199,58 @@ class People extends BaseController
 
                     $message = "updated";
 
-                    $this->sendMessage($keys_auth, $row->endpoint, $message, $this->request->getVar('edit-prename'), $this->request->getVar('edit-surname'));
+                    $this->sendMessage($keys_auth, $row->endpoint, $message, $people[$i]["edit-prename"], $people[$i]["edit-surname"]);
                 }
 
 
-            } else {
-                setcookie("error", "Person not updated.", time() + (86400 * 30), "/");
             }
 
 
-            return $this->response->redirect(site_url("people"));
         }
-
+        return $this->respondCreated();
     }
 
-    function deletePerson($id)
+    function deletePerson()
     {
         if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
             return $this->failUnauthorized();
         }
-        $person = $this->_peopleModel->getSinglePerson($id);
+        $people = $this->request->getPost("people");
 
 
-        if (!empty($id)) {
-            setcookie("success", "Person deleted.", time() + (86400 * 30), "/");
+        for ($i = 0; $i < sizeof($people); $i++) {
 
-            $subscribers = $this->_pushNotificationsModel->getAllSubscribers();
-            foreach ($subscribers as $row) {
 
-                $keys_auth = array(
-                    "contentEncoding" => "aesgcm",
-                    "endpoint" => $row->endpoint,
-                    "keys" => array(
-                        "auth" => $row->auth,
-                        "p256dh" => $row->p256dh
-                    )
-                );
+            $person = $this->_peopleModel->getSinglePerson($people[$i]["delete-id"]);
 
-                $message = "deleted";
 
-                $this->sendMessage($keys_auth, $row->endpoint, $message, $person->prename, $person->name);
+
+            if (!empty($people[$i]["delete-id"])) {
+
+                $subscribers = $this->_pushNotificationsModel->getAllSubscribers();
+                foreach ($subscribers as $row) {
+
+                    $keys_auth = array(
+                        "contentEncoding" => "aesgcm",
+                        "endpoint" => $row->endpoint,
+                        "keys" => array(
+                            "auth" => $row->auth,
+                            "p256dh" => $row->p256dh
+                        )
+                    );
+
+                    $message = "deleted";
+
+                    $this->_peopleModel->deletePerson($people[$i]["delete-id"]);
+
+                    $this->sendMessage($keys_auth, $row->endpoint, $message, $person->prename, $person->name);
+                }
+
+
             }
 
-
-        } else {
-            setcookie("success", "Person not deleted.", time() + (86400 * 30), "/");
         }
-        $this->_peopleModel->deletePerson($id);
-        return $this->response->redirect(site_url("people"));
+        return $this->respondCreated();
     }
 
 

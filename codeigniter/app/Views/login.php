@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" type="image/x-icon" href="logo.ico">
     <link rel="manifest" href="manifest.webmanifest">
-    <title>PWA 2</title>
+    <title>PWA 3</title>
     <meta name="theme-color" content="#FFE1C4">
 
     <link rel="apple-touch-icon" href="icon/icon96.png">
@@ -25,7 +25,7 @@
 
 
 <nav class="navbar navbar-light bg-light sticky-top">
-    <a class="navbar-brand" href="/people">PWA 2</a>
+    <a class="navbar-brand" href="/people">PWA 3</a>
 </nav>
 
 

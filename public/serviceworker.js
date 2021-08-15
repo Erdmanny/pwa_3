@@ -25,7 +25,7 @@ const STATIC_ASSETS = [
     "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/fonts/bootstrap-icons.woff2?856008caa5eb66df68595e734e59580d",
     "/people",
     "/people/addPerson",
-    "/people/getSinglePerson",
+    "/people/editPerson",
     "/app.js"
 ];
 
@@ -60,9 +60,7 @@ self.addEventListener("activate", (event) => {
 
 
 self.addEventListener("fetch", (event) => {
-    // console.log(event.request.url);
-    if (DYNAMIC_ASSETS.indexOf(event.request.url) !== -1) {
-        // console.log("URL: " + event.request.url);
+    if (DYNAMIC_ASSETS.indexOf(event.request.url) !== -1 || event.request.url.endsWith("addPerson_Validation")) {
         event.respondWith(
             caches.open(DYNAMIC_CACHE).then(function (cache) {
                 return fetch(event.request).then(function (response) {
@@ -73,24 +71,21 @@ self.addEventListener("fetch", (event) => {
                 })
             })
         )
-    } else if (event.request.url.includes("getSinglePerson?")) {
+    } else if (event.request.url.includes("editPerson?")) {
         event.respondWith(
-            caches.match("/people/getSinglePerson").then(cacheRes => {
+            caches.match("/people/editPerson").then(cacheRes => {
                 return cacheRes || fetch(event.request)
             })
         )
     } else {
         if (event.request.mode === "navigate") {
-            console.log("navigate");
             event.respondWith(
                 (async () => {
                     try {
                         const cache = await caches.open(STATIC_CACHE);
                         if (await cache.match(event.request)){
-                            console.log("1");
                             return await cache.match(event.request)
                         } else {
-                            console.log("2");
                             return await fetch(event.request);
                         }
                     } catch (error) {

@@ -1,8 +1,8 @@
 {
-  "name": "PWA 2",
-  "short_name": "PWA 2",
+  "name": "PWA 3",
+  "short_name": "PWA 3",
   "start_url": "http://localhost/",
-  "description": "Show data when offline, no functions",
+  "description": "All functions implemented",
   "display": "standalone",
   "background_color": "#8BEF9B",
   "theme_color": "#0032FF",

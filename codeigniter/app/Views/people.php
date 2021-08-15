@@ -31,39 +31,22 @@
 </div>
 
 <script>
-    function deletePerson(id) {
-        if (navigator.onLine) {
-            if (confirm("Are you sure you want to remove the person with id " + id + " ?")) {
-                window.location.href = "http://localhost/people/deletePerson/" + id;
-            }
-        } else {
-            alert("You cannot delete a person while offline.")
-        }
-    }
 
-
-    if (!navigator.onLine){
-        if (document.getElementById("delete-button") !== null) {
-            document.getElementById("delete-button").disabled = true;
-        }
-    }
-
-
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
     for(let i = 0; i <ca.length; i++) {
         let c = ca[i];
         while (c.charAt(0) === ' ') {
             c = c.substring(1);
         }
-        if (c.indexOf("error") === 0) {
-            let text = c.split("=")[1];
-            document.getElementById("feedback").classList.add("bg-error");
-            document.getElementById("feedback").innerText = text;
-         }
         if (c.indexOf("success") === 0) {
+            let key = c.split("=")[0];
             let text = c.split("=")[1];
             document.getElementById("feedback").classList.add("bg-success");
             document.getElementById("feedback").innerText = text;
+            document.cookie = key + " =; expires = Thu, 01 Jan 1970 00:00:00 UTC";
         }
     }
+
 </script>
 
