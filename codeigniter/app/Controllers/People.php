@@ -15,7 +15,7 @@ class People extends BaseController
 {
     use ResponseTrait;
 
-    private $_userModel, $_peopleModel, $_session, $_pushNotificationsModel, $_validation;
+    private $_userModel, $_peopleModel, $_pushNotificationsModel;
 
 
     public function __construct()
@@ -23,8 +23,6 @@ class People extends BaseController
         $this->_peopleModel = new PeopleModel();
         $this->_userModel = new UserModel();
         $this->_pushNotificationsModel = new PushNotificationsModel();
-        $this->_session = \Config\Services::session();
-        $this->_validation = \Config\Services::validation();
     }
 
     /**
@@ -98,7 +96,7 @@ class People extends BaseController
                 </button>";
         }
 
-        $this->_session->destroy();
+//        $this->_session->destroy();
         return $this->respond($people)
             ->setContentType('application/json');
     }

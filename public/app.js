@@ -752,5 +752,3 @@ function push_sendSubscriptionToServer(subscription, method) {
     }).then(() => subscription);
 }
 
-
-// https://developer.mozilla.org/en-US/docs/Web/API/PushManager/getSubscription

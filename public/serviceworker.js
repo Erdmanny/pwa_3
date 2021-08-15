@@ -60,13 +60,11 @@ self.addEventListener("activate", (event) => {
 
 
 self.addEventListener("fetch", (event) => {
-    if (DYNAMIC_ASSETS.indexOf(event.request.url) !== -1 || event.request.url.endsWith("addPerson_Validation")) {
+    if (DYNAMIC_ASSETS.indexOf(event.request.url) !== -1) {
         event.respondWith(
             caches.open(DYNAMIC_CACHE).then(function (cache) {
                 return fetch(event.request).then(function (response) {
-                    cache.put(event.request, response.clone())
-                        .catch(error => {
-                        });
+                    cache.put(event.request, response.clone());
                     return response;
                 })
             })

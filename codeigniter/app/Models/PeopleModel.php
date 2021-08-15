@@ -82,7 +82,7 @@ class PeopleModel extends Model
             'zip' => $zip,
             'city' => $city,
             'edited_by' => $edited_by
-        ];
+        ];+
         $this->_people->update($data);
     }
 

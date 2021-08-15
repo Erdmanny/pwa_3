@@ -2,7 +2,7 @@
   "name": "PWA 3",
   "short_name": "PWA 3",
   "start_url": "http://localhost/",
-  "description": "All functions implemented",
+  "description": "All functions implemented online and offline",
   "display": "standalone",
   "background_color": "#8BEF9B",
   "theme_color": "#0032FF",
