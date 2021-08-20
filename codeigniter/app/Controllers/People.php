@@ -60,9 +60,10 @@ class People extends BaseController
 
     public function index()
     {
-        echo view('header');
-        echo view('people');
-        echo view('footer');
+        if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
+            return redirect()->to('/');
+        }
+        return view('people');
     }
 
     public function getPeople()
@@ -75,14 +76,13 @@ class People extends BaseController
             setcookie("success", "", -1, "/");
         }
 
-
         $people = $this->_peopleModel->getPeople();
 
         for ($i = 0; $i < sizeof($people); $i++) {
             $id = $people[$i]["id"];
 
             $people[$i]["address"] = $people[$i]["zip"] . " " . $people[$i]["city"];
-            $people[$i]["fullname"] = $people[$i]["prename"] . " " . $people[$i]["name"];
+            $people[$i]["fullname"] = $people[$i]["prename"] . " " . $people[$i]["surname"];
 
 
             $people[$i]["offline"] =
@@ -96,7 +96,6 @@ class People extends BaseController
                 </button>";
         }
 
-//        $this->_session->destroy();
         return $this->respond($people)
             ->setContentType('application/json');
     }
@@ -104,9 +103,10 @@ class People extends BaseController
 
     public function addPerson()
     {
-        echo view('header');
-        echo view("addPerson");
-        echo view('footer');
+        if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
+            return redirect()->to('/');
+        }
+        return view("addPerson");
     }
 
     public function addPerson_Validation()
@@ -154,9 +154,10 @@ class People extends BaseController
 
     function editPerson()
     {
-        echo view('header');
-        echo view("editPerson");
-        echo view('footer');
+        if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
+            return redirect()->to('/');
+        }
+        return view("editPerson");
     }
 
     function editPerson_Validation()
@@ -241,7 +242,7 @@ class People extends BaseController
 
                     $this->_peopleModel->deletePerson($people[$i]["delete-id"]);
 
-                    $this->sendMessage($keys_auth, $row->endpoint, $message, $person->prename, $person->name);
+                    $this->sendMessage($keys_auth, $row->endpoint, $message, $person->prename, $person->surname);
                 }
 
 

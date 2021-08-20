@@ -32,11 +32,8 @@ const STATIC_ASSETS = [
 self.addEventListener("install", (event) => {
     event.waitUntil(
         caches.open(STATIC_CACHE).then(cache => {
-            cache.addAll(STATIC_ASSETS)
-                .catch(err => {
-                    console.log(err);
-                });
-            cache.add(new Request(OFFLINE_URL, { cache: "reload" }));
+            cache.addAll(STATIC_ASSETS);
+            cache.add(OFFLINE_URL);
         })
     );
     event.waitUntil(
@@ -87,8 +84,6 @@ self.addEventListener("fetch", (event) => {
                             return await fetch(event.request);
                         }
                     } catch (error) {
-                        console.log("Fetch failed; returning offline page instead.", error);
-
                         const cache = await caches.open(STATIC_CACHE);
                         return await cache.match(OFFLINE_URL);
                     }

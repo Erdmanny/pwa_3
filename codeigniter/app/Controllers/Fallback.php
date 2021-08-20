@@ -5,9 +5,9 @@ namespace App\Controllers;
 
 class Fallback extends BaseController
 {
-    public function index()
+    public function index(): string
     {
-        echo view('fallback');
+        return view('fallback');
     }
 
 

@@ -28,18 +28,19 @@ class PeopleModel extends Model
     }
 
     /**
+     * @param $prename
      * @param $surname
-     * @param $name
      * @param $street
      * @param $zip
      * @param $city
      *
      * insert new person into the database
      */
-    public function addPerson($surname, $name, $street, $zip, $city, $created_by) {
+
+    public function addPerson($prename, $surname, $street, $zip, $city, $created_by) {
         $data = [
-            'prename' => $surname,
-            'name' => $name,
+            'prename' => $prename,
+            'surname' => $surname,
             'street' => $street,
             'zip' => $zip,
             'city' => $city,
@@ -65,24 +66,25 @@ class PeopleModel extends Model
 
     /**
      * @param $id
+     * @param $prename
      * @param $surname
-     * @param $name
      * @param $street
      * @param $zip
      * @param $city
      *
      * update person with $id by given values
      */
-    public function updatePerson($id, $surname, $name, $street, $zip, $city, $edited_by){
+
+    public function updatePerson($id, $prename, $surname, $street, $zip, $city, $edited_by){
         $this->_people->where("id", $id);
         $data = [
-            'prename' => $surname,
-            'name' => $name,
+            'prename' => $prename,
+            'surname' => $surname,
             'street' => $street,
             'zip' => $zip,
             'city' => $city,
             'edited_by' => $edited_by
-        ];+
+        ];
         $this->_people->update($data);
     }
 

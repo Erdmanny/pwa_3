@@ -25,13 +25,11 @@ if (Notification.permission === 'denied') {
 function initServiceWorker() {
     navigator.serviceWorker.register('/serviceworker.js')
         .then(() => {
-                console.log('[SW] Service worker has been registered');
-                return navigator.serviceWorker.ready;
-            },
-            e => {
-                console.error('[SW] Service worker registration failed', e);
-            }
-        );
+            console.log('[SW] Registration successful.');
+        })
+        .catch(e => {
+            console.error('[SW] Registration failed: ', e);
+        });
 }
 
 function initTable() {
@@ -81,7 +79,6 @@ if (navigator.onLine) {
                 getPeopleEditIDB()
                     .then(response => {
                         if (response.length !== 0) {
-                            console.log(response);
                             editPeopleSQL(response);
                         }
                     })
@@ -270,7 +267,6 @@ function addToAddPeopleIDB(people) {
 
 function checkAddInput() {
     let numbers = /^[0-9]+$/;
-    console.log("Value: ", document.getElementById("new-prename").value);
     if (document.getElementById("new-prename").value === "" ||
         document.getElementById("new-surname").value === "" ||
         document.getElementById("new-street").value === "" ||

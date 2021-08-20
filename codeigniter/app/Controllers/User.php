@@ -80,7 +80,7 @@ class User extends BaseController
 
         $error = $this->validate([
             'email' => 'required|valid_email',
-            'password' => 'required'
+            'password' => 'required|validateUser[email,password]'
         ],
             [
                 'email' => [
@@ -88,7 +88,8 @@ class User extends BaseController
                     'valid_email' => 'A valid email is required'
                 ],
                 'password' => [
-                    'required' => 'A password is required'
+                    'required' => 'A password is required',
+                    'validateUser' => 'Email or Password don\'t match.'
                 ]
             ]
         );
@@ -159,7 +160,6 @@ class User extends BaseController
             ]);
         } else {
             $this->_userModel->createUser($mail, $password, $token);
-
             return redirect()->to('/');
         }
     }
