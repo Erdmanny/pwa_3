@@ -226,6 +226,8 @@ class People extends BaseController
 
             if (!empty($people[$i]["delete-id"])) {
 
+                $this->_peopleModel->deletePerson($people[$i]["delete-id"]);
+
                 $subscribers = $this->_pushNotificationsModel->getAllSubscribers();
                 foreach ($subscribers as $row) {
 
@@ -240,7 +242,7 @@ class People extends BaseController
 
                     $message = "deleted";
 
-                    $this->_peopleModel->deletePerson($people[$i]["delete-id"]);
+
 
                     $this->sendMessage($keys_auth, $row->endpoint, $message, $person->prename, $person->surname);
                 }
