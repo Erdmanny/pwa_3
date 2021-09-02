@@ -6,10 +6,9 @@
     <link rel="shortcut icon" type="image/x-icon" href="/logo.ico">
     <link rel="manifest" href="/manifest.webmanifest">
     <title>PWA 3</title>
-    <meta name="theme-color" content="#FFE1C4">
+    <meta name="theme-color" content="#0032FF">
 
-    <link rel="apple-touch-icon" href="/icon/icon96.png">
-<!--    <meta name="apple-mobile-web-app-status-bar" content="#aa7700">-->
+    <link rel="apple-touch-icon" href="/icon/icon192.png">
 
 
     <!--Bootstrap CSS-->
@@ -25,7 +24,7 @@
 
 
 <nav class="navbar navbar-light bg-light sticky-top">
-    <a class="navbar-brand" href="/people">PWA 3</a>
+    <a class="navbar-brand" href="/">PWA 3</a>
 </nav>
 
 <?php

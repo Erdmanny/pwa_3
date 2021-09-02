@@ -6,19 +6,12 @@ const peopleTable = $("#peopleTable");
 
 
 if (!navigator.serviceWorker) {
-    console.warn('Service workers are not supported by this browser');
+    window.alert('Service workers are not supported by this browser')
 }
 
 if (!window.PushManager) {
     console.warn('Push notifications are not supported by this browser');
-}
-
-if (!ServiceWorkerRegistration.prototype.showNotification) {
-    console.warn('Notifications are not supported by this browser');
-}
-
-if (Notification.permission === 'denied') {
-    console.warn('Notifications are denied by the user');
+    pushButton.style.visibility = "hidden";
 }
 
 
@@ -67,44 +60,42 @@ function initTable() {
 initTable();
 let people = null;
 
+let networkDataReceived = false;
+
+
 if (navigator.onLine) {
-    fetch("http://localhost/people/checkCookie")
-        .then((resp) => resp.json())
-        .then(data => {
-            if (data) {
-                window.location.href = "http://localhost/";
-            } else {
-                initIndexedDB();
-                initServiceWorker();
-                getPeopleEditIDB()
-                    .then(response => {
-                        if (response.length !== 0) {
-                            editPeopleSQL(response);
-                        }
-                    })
-                getPeopleAddIDB()
-                    .then(response => {
-                        if (response.length !== 0) {
-                            addPeopleToSQL(response);
-                        }
-                    });
-                getPeopleDeleteIDB()
-                    .then(response => {
-                        if (response.length !== 0) {
-                            deletePeopleSQL(response);
-                        }
-                    });
-                people = fetch("http://localhost/people/getPeople")
-                    .then(response => response.json())
-                    .then(data => {
-                        writeToView(data);
-                    })
-                    .catch(err => {
-                        console.log("Security cookies not found");
-                    })
+    initIndexedDB();
+    initServiceWorker();
+    getPeopleEditIDB()
+        .then(response => {
+            if (response.length !== 0) {
+                editPeopleSQL(response);
             }
         })
-        .catch(err => console.log(err));
+    getPeopleAddIDB()
+        .then(response => {
+            if (response.length !== 0) {
+                addPeopleToSQL(response);
+            }
+        });
+    getPeopleDeleteIDB()
+        .then(response => {
+            if (response.length !== 0) {
+                deletePeopleSQL(response);
+            }
+        });
+
+    people = fetch("http://localhost/people/getPeople")
+        .then(response => {
+            if (response.status === 401) {
+                window.location.href = "http://localhost/";
+            }
+            return response.json()
+        })
+        .then(data => {
+            networkDataReceived = true;
+            writeToView(data);
+        })
 }
 
 
@@ -117,47 +108,54 @@ caches.open("dynamic-v1").then(function (cache) {
         })
         .then(data => {
 
+            if (!networkDataReceived) {
 
-            getPeopleEditIDB().then(editPeople => {
-                for (let i = 0; i < editPeople.length; i++) {
-                    for (let j = 0; j < data.length; j++) {
-                        if (editPeople[i]["edit-id"] === data[j]["id"]) {
-                            Object.assign(data[j],
-                                {
-                                    "offline": "<i class='bi bi-pencil-fill'></i>",
-                                    "fullname": editPeople[i]["edit-prename"] + " " + editPeople[i]["edit-surname"],
-                                    "street": editPeople[i]["edit-street"],
-                                    "address": editPeople[i]["edit-postcode"] + " " + editPeople[i]["edit-city"]
-                                });
+
+                getPeopleEditIDB().then(editPeople => {
+                    for (let i = 0; i < editPeople.length; i++) {
+                        for (let j = 0; j < data.length; j++) {
+                            if (editPeople[i]["edit-id"] === data[j]["id"]) {
+                                Object.assign(data[j],
+                                    {
+                                        "offline": "<i class='bi bi-pencil-fill'></i>",
+                                        "fullname": editPeople[i]["edit-prename"] + " " + editPeople[i]["edit-surname"],
+                                        "street": editPeople[i]["edit-street"],
+                                        "address": editPeople[i]["edit-postcode"] + " " + editPeople[i]["edit-city"]
+                                    });
+                            }
                         }
                     }
-                }
-            })
-            getPeopleDeleteIDB().then(deletePeople => {
-                for (let i = 0; i < deletePeople.length; i++) {
-                    for (let j = 0; j < data.length; j++) {
-                        if (deletePeople[i]["delete-id"] === parseInt(data[j]["id"])) {
-                            Object.assign(data[j],
-                                {
-                                    "offline": "<i class='bi bi-trash-fill'></i>"
-                                });
+                })
+                getPeopleDeleteIDB().then(deletePeople => {
+                    for (let i = 0; i < deletePeople.length; i++) {
+                        for (let j = 0; j < data.length; j++) {
+                            if (deletePeople[i]["delete-id"] === parseInt(data[j]["id"])) {
+                                Object.assign(data[j],
+                                    {
+                                        "offline": "<i class='bi bi-trash-fill'></i>"
+                                    });
+                            }
                         }
                     }
-                }
-            })
-            getPeopleAddIDB().then(addPeople => {
-                if (addPeople.length !== 0) {
-                    let combined = data.concat(addPeople);
-                    writeToView(combined);
-                } else {
-                    writeToView(data);
-                }
-            })
-
+                })
+                getPeopleAddIDB().then(addPeople => {
+                    if (addPeople.length !== 0) {
+                        let combined = data.concat(addPeople);
+                        writeToView(combined);
+                    } else {
+                        writeToView(data);
+                    }
+                })
+            }
 
         })
-        .catch(() => people)
+        .catch(() => {
+            return people
+        })
+        .catch(err => console.log(err));
 });
+
+
 
 
 function writeToView(people) {
@@ -215,7 +213,7 @@ function addPeopleToSQL(people) {
         success: () => {
             clearAddPeopleIDB()
                 .then(() => {
-                    location.reload();
+                    window.alert("AddPeopleIDB cleared");
                 })
                 .catch(err => {
                     console.log("Error in sendPeopleToSQL: ", err);
@@ -380,7 +378,7 @@ function editPeopleSQL(people) {
         success: () => {
             clearEditPeopleIDB()
                 .then(() => {
-                    location.reload();
+                    window.alert("EditPeopleIDB cleared");
                 })
                 .catch(err => {
                     console.log("Error in editPeopleSQL: ", err);
@@ -544,7 +542,7 @@ function deletePeopleSQL(people) {
         success: () => {
             clearDeletePeopleIDB()
                 .then(() => {
-                    location.reload();
+                    window.alert("DeletePeopleIDB cleared");
                 })
                 .catch(err => {
                     console.log("Error in deletePeopleSQL: ", err);
@@ -628,9 +626,9 @@ if (pushButton !== null) {
             serviceWorkerRegistration.pushManager.getSubscription())
         .then(subscription => {
             if (subscription === null) {
-                pushButton.textContent = 'Allow Push';
+                pushButton.textContent = 'Push off';
             } else {
-                pushButton.textContent = 'Stop Push';
+                pushButton.textContent = 'Push on';
             }
         });
 
@@ -645,11 +643,11 @@ if (pushButton !== null) {
                         .then(res => {
                             console.log("subscribe: " + res);
                         });
-                    pushButton.textContent = 'Stop Push';
+                    pushButton.textContent = 'Push on';
                 } else {
                     if (confirm("are you sure you want to unsubscribe?")) {
                         push_unsubscribe();
-                        pushButton.textContent = 'Allow Push'
+                        pushButton.textContent = 'Push off';
                     }
                 }
             });
@@ -730,7 +728,6 @@ function push_unsubscribe() {
 function push_sendSubscriptionToServer(subscription, method) {
     const key = subscription.getKey('p256dh');
     const token = subscription.getKey('auth');
-    const contentEncoding = (PushManager.supportedContentEncodings || ['aesgcm'])[0];
 
     return fetch('http://localhost/people/push_subscription', {
         method,
@@ -742,9 +739,8 @@ function push_sendSubscriptionToServer(subscription, method) {
         body: JSON.stringify({
             "endpoint": subscription.endpoint,
             "publicKey": key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,
-            "authToken": token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null,
-            contentEncoding
+            "authToken": token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null
         }),
-    }).then(() => subscription);
+    });
 }
 

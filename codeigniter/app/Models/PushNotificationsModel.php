@@ -13,14 +13,16 @@ class PushNotificationsModel extends Model{
     }
 
 
-    public function getSubscribersByEndpoint($endpoint){
+    public function getSubscribersByEndpoint($endpoint): array
+    {
         return $this->_subscribers
             ->where("endpoint", $endpoint)
             ->get()
             ->getResult();
     }
 
-    public function insertSubscriber($endpoint, $auth, $p256dh){
+    public function insertSubscriber($endpoint, $auth, $p256dh): bool
+    {
         $data = [
             'endpoint' => $endpoint,
             'auth' => $auth,
@@ -30,24 +32,16 @@ class PushNotificationsModel extends Model{
         return true;
     }
 
-    public function updateSubscriber($id, $endpoint, $auth, $p256dh){
-        $this->_subscribers->where("id", $id);
-        $data = [
-            'endpoint' => $endpoint,
-            'auth' => $auth,
-            'p256dh' => $p256dh
-        ];
-        $this->_subscribers->update($data);
-        return true;
-    }
 
-    public function deleteSubscriber($id){
+    public function deleteSubscriber($id): bool
+    {
         $this->_subscribers->where("id", $id);
         $this->_subscribers->delete();
         return true;
     }
 
-    public function getAllSubscribers(){
+    public function getAllSubscribers(): array
+    {
         return $this->_subscribers->get()->getResult();
     }
 

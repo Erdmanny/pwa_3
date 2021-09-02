@@ -15,6 +15,7 @@ class User extends BaseController
 
     public function index(): string
     {
+        echo '<script type="text/Javascript">caches.delete("dynamic-v1")</script>';
         if (isset($_COOKIE["error-edit-prename"])) {
             unset($_COOKIE["error-edit-prename"]);
             setcookie("error-edit-prename", "", -1, "/");
