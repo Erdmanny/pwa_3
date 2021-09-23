@@ -63,39 +63,96 @@ let people = null;
 let networkDataReceived = false;
 
 
+// if (navigator.onLine) {
+//     initIndexedDB();
+//     initServiceWorker();
+//     getPeopleEditIDB()
+//         .then(response => {
+//             if (response.length !== 0) {
+//                 editPeopleSQL(response);
+//             }
+//         })
+//     getPeopleAddIDB()
+//         .then(response => {
+//             if (response.length !== 0) {
+//                 addPeopleToSQL(response);
+//             }
+//         });
+//     getPeopleDeleteIDB()
+//         .then(response => {
+//             if (response.length !== 0) {
+//                 deletePeopleSQL(response);
+//             }
+//         });
+//
+//     people = fetch("http://localhost/people/getPeople")
+//         .then(response => {
+//             if (response.status === 401) {
+//                 window.location.href = "http://localhost/";
+//             }
+//             return response.json()
+//         })
+//         .then(data => {
+//             networkDataReceived = true;
+//             console.log("server");
+//             writeToView(data);
+//         })
+// }
+
 if (navigator.onLine) {
     initIndexedDB();
     initServiceWorker();
+    document.getElementById("sync").textContent = "Synchronising";
     getPeopleEditIDB()
         .then(response => {
             if (response.length !== 0) {
-                editPeopleSQL(response);
+                console.log("edit != 0");
+                return editPeopleSQL(response);
+            } else {
+                console.log("edit == 0");
+                return true;
             }
         })
-    getPeopleAddIDB()
-        .then(response => {
-            if (response.length !== 0) {
-                addPeopleToSQL(response);
-            }
+        .then(bool => {
+            getPeopleAddIDB()
+                .then(response => {
+                    if (response.length !== 0) {
+                        console.log("add != 0");
+                        return addPeopleToSQL(response);
+                    } else {
+                        console.log("add == 0");
+                        return true;
+                    }
+                })
+                .then(bool2 => {
+                    getPeopleDeleteIDB()
+                        .then(response => {
+                            if (response.length !== 0) {
+                                console.log("del != 0");
+                                return deletePeopleSQL(response);
+                            } else {
+                                console.log("del == 0");
+                                return true;
+                            }
+                        })
+                        .then(bool3 => {
+                            console.log("done");
+                            people = fetch("http://localhost/people/getPeople")
+                                .then(response => {
+                                    document.getElementById("sync").textContent = "";
+                                    if (response.status === 401) {
+                                        window.location.href = "http://localhost/";
+                                    }
+                                    return response.json()
+                                })
+                                .then(data => {
+                                    networkDataReceived = true;
+                                    console.log("server");
+                                    writeToView(data);
+                                });
+                        });
+                });
         });
-    getPeopleDeleteIDB()
-        .then(response => {
-            if (response.length !== 0) {
-                deletePeopleSQL(response);
-            }
-        });
-
-    people = fetch("http://localhost/people/getPeople")
-        .then(response => {
-            if (response.status === 401) {
-                window.location.href = "http://localhost/";
-            }
-            return response.json()
-        })
-        .then(data => {
-            networkDataReceived = true;
-            writeToView(data);
-        })
 }
 
 
@@ -141,8 +198,10 @@ caches.open("dynamic-v1").then(function (cache) {
                 getPeopleAddIDB().then(addPeople => {
                     if (addPeople.length !== 0) {
                         let combined = data.concat(addPeople);
+                        console.log("cache");
                         writeToView(combined);
                     } else {
+                        console.log("cache");
                         writeToView(data);
                     }
                 })
@@ -150,12 +209,10 @@ caches.open("dynamic-v1").then(function (cache) {
 
         })
         .catch(() => {
-            return people
+            return people;
         })
         .catch(err => console.log(err));
 });
-
-
 
 
 function writeToView(people) {
@@ -206,15 +263,15 @@ function getPeopleAddIDB() {
 
 
 function addPeopleToSQL(people) {
-    $.ajax({
+    return $.ajax({
         url: "http://localhost/people/addPerson_Validation",
         type: "POST",
         data: {people: people},
         success: () => {
             clearAddPeopleIDB()
-                .then(() => {
-                    window.alert("AddPeopleIDB cleared");
-                })
+                // .then(() => {
+                //     window.alert("AddPeopleIDB cleared");
+                // })
                 .catch(err => {
                     console.log("Error in sendPeopleToSQL: ", err);
                 });
@@ -371,15 +428,15 @@ function getPeopleEditIDB() {
 
 
 function editPeopleSQL(people) {
-    $.ajax({
+    return $.ajax({
         url: "http://localhost/people/editPerson_Validation",
         type: "POST",
         data: {people: people},
         success: () => {
             clearEditPeopleIDB()
-                .then(() => {
-                    window.alert("EditPeopleIDB cleared");
-                })
+                // .then(() => {
+                //     window.alert("EditPeopleIDB cleared");
+                // })
                 .catch(err => {
                     console.log("Error in editPeopleSQL: ", err);
                 });
@@ -535,15 +592,15 @@ function getPeopleDeleteIDB() {
 
 
 function deletePeopleSQL(people) {
-    $.ajax({
+    return $.ajax({
         url: "http://localhost/people/deletePerson",
         type: "POST",
         data: {people: people},
         success: () => {
             clearDeletePeopleIDB()
-                .then(() => {
-                    window.alert("DeletePeopleIDB cleared");
-                })
+                // .then(() => {
+                //     window.alert("DeletePeopleIDB cleared");
+                // })
                 .catch(err => {
                     console.log("Error in deletePeopleSQL: ", err);
                 });

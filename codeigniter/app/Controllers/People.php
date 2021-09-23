@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Models\PeopleModel;
 use App\Models\PushNotificationsModel;
 use App\Models\UserModel;
+use CodeIgniter\HTTP\Response;
+use ErrorException;
 use Exception;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
@@ -17,7 +19,10 @@ class People extends BaseController
 
     private $_userModel, $_peopleModel, $_pushNotificationsModel;
 
-
+    /**
+     * PeopleController constructor.
+     * Init models and validation.
+     */
     public function __construct()
     {
         $this->_peopleModel = new PeopleModel();
@@ -44,12 +49,19 @@ class People extends BaseController
         return hash_equals($secretFromCookie, hash('sha256', $user["secret"]));
     }
 
-
+    /**
+     * @return string - People View with data
+     */
     public function index(): string
     {
         return view('people');
     }
 
+    /**
+     * @return mixed
+     *
+     * Unset all cookies and get all people from the model.
+     */
     public function getPeople()
     {
         if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
@@ -84,12 +96,20 @@ class People extends BaseController
             ->setContentType('application/json');
     }
 
-
+    /**
+     * @return string - AddPerson View
+     */
     public function addPerson(): string
     {
         return view("addPerson");
     }
 
+    /**
+     * @return Response|mixed
+     * @throws ErrorException
+     *
+     * Validate AddPerson.
+     */
     public function addPerson_Validation()
     {
         if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
@@ -130,11 +150,19 @@ class People extends BaseController
         return $this->respondCreated();
     }
 
+    /**
+     * @return string - Edit View with data
+     */
     function editPerson(): string
     {
         return view("editPerson");
     }
 
+    /**
+     * @return Response|mixed
+     *
+     * Validate EditPerson.
+     */
     function editPerson_Validation()
     {
         if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
@@ -178,6 +206,11 @@ class People extends BaseController
         return $this->respondCreated();
     }
 
+    /**
+     * @return Response|mixed
+     *
+     * Delete Person.
+     */
     function deletePerson()
     {
         if (!isset($_COOKIE["userID"]) || !isset($_COOKIE["userSecret"]) || !$this->isValidRequest($_COOKIE["userID"], $_COOKIE["userSecret"])) {
@@ -216,7 +249,16 @@ class People extends BaseController
 
     /* ------------------------------------------ Web Push Notifications ---------------------------------------------------- */
 
-
+    /**
+     * @param $keys_auth
+     * @param $endpoint
+     * @param $message
+     * @param $prename
+     * @param $surname
+     * @throws ErrorException
+     *
+     * Send Push Notification.
+     */
     protected function sendMessage($keys_auth, $endpoint, $message, $prename, $surname)
     {
         $subscription = Subscription::create($keys_auth);
@@ -250,6 +292,9 @@ class People extends BaseController
         }
     }
 
+    /**
+     * Subscribe to or unsubscribe from Push.
+     */
     public function push_subscription()
     {
         $contentType = isset($_SERVER["CONTENT_TYPE"]) ? trim($_SERVER["CONTENT_TYPE"]) : '';

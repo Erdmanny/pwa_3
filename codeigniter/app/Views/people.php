@@ -24,6 +24,7 @@
 
 <nav class="navbar navbar-light bg-light sticky-top">
     <a class="navbar-brand" href="/people">PWA 3</a>
+    <span id="sync"></span>
     <div class="ml-auto d-flex" id="nav-buttons"></div>
 </nav>
 

@@ -7,12 +7,18 @@ class User extends BaseController
 {
     private $_userModel;
 
+    /**
+     * UserController constructor.
+     * Init model.
+     */
     public function __construct()
     {
         $this->_userModel = new UserModel();
     }
 
-
+    /**
+     * @return string - Login View after unsetting cookies
+     */
     public function index(): string
     {
         echo '<script type="text/Javascript">caches.delete("dynamic-v1")</script>';
@@ -71,6 +77,11 @@ class User extends BaseController
         return view('login');
     }
 
+    /**
+     * @return RedirectResponse|string
+     *
+     * Validate Login
+     */
     public function login()
     {
         helper(['form', 'url']);
@@ -95,8 +106,6 @@ class User extends BaseController
             ]
         );
 
-
-
         if (!$error) {
             return view('login', [
                 'validation' => $this->validator
@@ -111,12 +120,19 @@ class User extends BaseController
         }
     }
 
+    /**
+     * @return string - Registration View
+     */
     public function showRegistration(): string
     {
         return view('register');
     }
 
-
+    /**
+     * @return RedirectResponse|string
+     *
+     * Validate Registration
+     */
     public function register()
     {
         helper(['form', 'url']);
@@ -165,7 +181,11 @@ class User extends BaseController
         }
     }
 
-
+    /**
+     * @return RedirectResponse
+     *
+     * Redirect to Login.
+     */
     public function logout(): RedirectResponse
     {
         return redirect()->to('/');
